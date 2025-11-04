@@ -1,24 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"mcctl/controller"
 	"os"
 )
 
-
 func main() {
-	controller.CheckParams(os.Args)
 
+	controller.CheckParams(os.Args)
 	provider := os.Args[1]
 	resource := os.Args[2]
-	action   := os.Args[3]
+	action := os.Args[3]
 
 	if !controller.IsValidProvider(provider) {
 		fmt.Println("Invalid provider")
-		fmt.Println("\nAvalable providers: aws, azure, gcp")
+		fmt.Println("\nAvailable providers: aws, azure, gcp")
 		os.Exit(1)
 	}
+	
+	controller.ExecuteAction(provider, resource, action)
 
-	controller.ExecuteActon(provider, resource, action)
+	
 }

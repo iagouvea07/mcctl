@@ -2,10 +2,11 @@ package controller
 
 import (
 	"fmt"
+	"mcctl/modules/ec2"
 	"os"
 )
 
-func ExecuteActon(provider string, resource string, action string) {
+func ExecuteAction(provider string, resource string, action string) {
 	switch resource {
 		case "instance":
 			handleInstances(provider, action)
@@ -34,7 +35,7 @@ func handleInstances(provider string, action string) {
 func listInstances(provider string) {
 	switch provider {
     	case "aws":
-			fmt.Println("boa")
+			ec2.ListInstances()
 		case "azure":
 			//do action
 		case "gcp":

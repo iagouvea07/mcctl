@@ -75,7 +75,7 @@ func ListInstances(output string) {
 				jsonList = append(jsonList, instance)
 			}
 		}
-		jsonEncode, _ := json.Marshal(jsonList)
+		jsonEncode, _ := json.MarshalIndent(jsonList, "", "  ")
 		fmt.Println(string(jsonEncode))
 	} else {
 		blue.Fprintf(w, "%-20s %-25s %-15s %-10s %-15s %-15s\n",

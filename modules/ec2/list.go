@@ -13,13 +13,27 @@ import (
 )
 
 
+type InstanceList struct {
+	InstanceName string
+	InstanceId string
+	InstanceType string
+	InstanceStatus string
+	InstancePublicIp string
+	InstancePrivateIp string
+}
+
+var (
+	instanceId string
+	instanceName string
+	instanceType string
+	instanceStatus string
+	instancePublicIp string
+	instancePrivateIp string
+)
+
+var jsonList []InstanceList
+
 func ListInstances(output string) {
-	var instanceId string
-	var instanceName string
-	var instanceType string
-	var instanceStatus string
-	var instancePublicIp string
-	var instancePrivateIp string
 
     cfg, err := config.LoadDefaultConfig(context.TODO(), 
         config.WithRegion("us-east-1"),
@@ -38,63 +52,60 @@ func ListInstances(output string) {
 		os.Exit(22)
 	}
 
-	w := tabwriter.NewWriter(os.Stdout, 10, 0, 2, ' ', tabwriter.Debug)
+	for _, reservations := range result.Reservations {
+		for _, instances := range reservations.Instances {
 
+			for _, tag := range instances.Tags{if *tag.Key == "Name" {instanceName = *tag.Value}}
+			if instances.PublicIpAddress != nil {instancePublicIp = *instances.PublicIpAddress } else {instancePublicIp = "-"}
+			if instances.PrivateIpAddress != nil {instancePrivateIp = *instances.PrivateIpAddress} else {instancePrivateIp = "-"}
+			instanceId = *instances.InstanceId
+			instanceType = string(instances.InstanceType)
+			instanceStatus = string(instances.State.Name)
+
+			instance := InstanceList{
+				InstanceName: instanceName,
+				InstanceId: instanceId, 
+				InstanceType: instanceType, 
+				InstanceStatus: instanceStatus,
+				InstancePublicIp: instancePublicIp,
+				InstancePrivateIp: instancePrivateIp,
+			}
+			jsonList = append(jsonList, instance)
+		}
+	}
+	jsonEncode, _ := json.MarshalIndent(jsonList, "", "  ")
+	jsonList := string(jsonEncode)
+
+	switch output {
+		case "json": 
+			fmt.Println(jsonList)
+			os.Exit(0)
+
+		case "table":
+			tableOutput(jsonList)
+	}
+}
+
+func tableOutput(result string) {
+	var instances []InstanceList
+	json.Unmarshal([]byte(result), &instances)
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 0, 2, ' ', tabwriter.Debug)
 	blue := color.New(color.FgCyan).Add(color.Underline)
 	white := color.New(color.FgWhite).Add(color.Underline)
 
-	if output == "json" {
-		fmt.Println("saida", output)
-
-		type InstanceList struct {
-			InstanceName string
-			InstanceId string
-			InstanceType string
-			InstanceStatus string
-			InstancePublicIp string
-			InstancePrivateIp string
-		}
-
-		var jsonList []InstanceList
-
-		for _, reservations := range result.Reservations {
-			for _, instances := range reservations.Instances {
-				for _, tag := range instances.Tags{if *tag.Key == "Name" {instanceName = *tag.Value}}
-
-				if instances.PublicIpAddress != nil {instancePublicIp = *instances.PublicIpAddress } else {instancePublicIp = "-"}
-				if instances.PrivateIpAddress != nil {instancePrivateIp = *instances.PrivateIpAddress} else {instancePrivateIp = "-"}
-
-				instance := InstanceList{
-					InstanceName: instanceName,
-					InstanceId: *instances.InstanceId, 
-					InstanceType: string(instances.InstanceType), 
-					InstanceStatus: string(instances.State.Name),
-					InstancePublicIp: instancePublicIp,
-					InstancePrivateIp: instancePrivateIp,
-				}
-				jsonList = append(jsonList, instance)
-			}
-		}
-		jsonEncode, _ := json.MarshalIndent(jsonList, "", "  ")
-		fmt.Println(string(jsonEncode))
-	} else {
-		blue.Fprintf(w, "%-20s %-25s %-15s %-10s %-15s %-15s\n",
+	blue.Fprintf(w, "%-30s %-25s %-15s %-10s %-15s %-15s\n",
 		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
-		for _, reservations := range result.Reservations {
-			for _, instance := range reservations.Instances {
-				for _, tag := range instance.Tags{if *tag.Key == "Name" {instanceName = *tag.Value}}
-				instanceId = *instance.InstanceId
-				instanceType = string(instance.InstanceType)
-				instanceStatus = string(instance.State.Name)
 
-				if instance.PublicIpAddress != nil {instancePublicIp = *instance.PublicIpAddress } else {instancePublicIp = "-"}
-				if instance.PrivateIpAddress != nil {instancePrivateIp = *instance.PrivateIpAddress} else {instancePrivateIp = "-"}
-				
-				white.Fprintf(w, "%-20s %-25s %-15s %-10s %-15s %-15s\n",
-					instanceName, instanceId, instanceType, instanceStatus, instancePublicIp, instancePrivateIp)
-				w.Flush()
-			}
-		}
+	for _, instance := range instances {
+		white.Fprintf(w, "%-30s %-25s %-15s %-10s %-15s %-15s\n",
+			instance.InstanceName,
+			instance.InstanceId,
+			instance.InstanceType,
+			instance.InstanceStatus,
+			instance.InstancePublicIp,
+			instance.InstancePrivateIp,
+		)
+		w.Flush()
 	}
-	
 }

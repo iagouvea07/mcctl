@@ -31,6 +31,10 @@ func ListInstances() {
         log.Fatal(err)
     }
 
+	if result == nil {
+		os.Exit(22)
+	}
+
 	w := tabwriter.NewWriter(os.Stdout, 10, 0, 2, ' ', tabwriter.Debug)
 
 	blue := color.New(color.FgCyan).Add(color.Underline)
@@ -44,13 +48,13 @@ func ListInstances() {
 			instanceId = *instance.InstanceId
 			instanceType = string(instance.InstanceType)
 			instanceStatus = string(instance.State.Name)
-			instancePublicIp = *instance.PublicIpAddress
-			instancePrivateIp = *instance.PrivateIpAddress
 
+			if instance.PublicIpAddress != nil {instancePublicIp = *instance.PublicIpAddress } else {instancePublicIp = "-"}
+			if instance.PrivateIpAddress != nil {instancePrivateIp = *instance.PrivateIpAddress} else {instancePrivateIp = "-"}
+			
 			white.Fprintf(w, "%-20s %-25s %-15s %-10s %-15s %-15s\n",
 				instanceName, instanceId, instanceType, instanceStatus, instancePublicIp, instancePrivateIp)
 			w.Flush()
 		}
 	}
-
 }

@@ -6,16 +6,16 @@ import (
 	"os"
 )
 
-func ExecuteAction(provider string, resource string, action string) {
+func ExecuteAction(provider string, resource string, action string, output string) {
 	switch resource {
 		case "instance":
-			handleInstances(provider, action)
+			handleInstances(provider, action, output)
 		default:
 			fmt.Println("error")
 	}
 }
 
-func handleInstances(provider string, action string) {
+func handleInstances(provider string, action string, output string) {
 	switch action {
 
 		case "delete":

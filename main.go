@@ -1,26 +1,29 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"mcctl/controller"
+	"mcctl/cmd"
 	"os"
+	"github.com/spf13/cobra"
 )
 
+var rootCmd = &cobra.Command{
+	Use: "mcctl",
+	Short: "Multi Cloud Controller",
+}
+
+func init() {
+	rootCmd.AddCommand(
+		cmd.AwsCmd, 
+		cmd.AzureCmd, 
+		cmd.GcpCmd,
+	)
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+}
+
 func main() {
-
-	controller.CheckParams(os.Args)
-	provider := os.Args[1]
-	resource := os.Args[2]
-	action := os.Args[3]
-
-	if !controller.IsValidProvider(provider) {
-		fmt.Println("Invalid provider")
-		fmt.Println("\nAvailable providers: aws, azure, gcp")
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err, os.Stderr)
 		os.Exit(1)
 	}
-	
-	controller.ExecuteAction(provider, resource, action)
-
-	
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"mcctl/cmd"
-	"os"
 	"github.com/spf13/cobra"
 )
 

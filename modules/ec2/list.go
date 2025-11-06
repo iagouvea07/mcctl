@@ -47,19 +47,30 @@ func ListInstances(output string) {
 		fmt.Println("saida", output)
 
 		type InstanceList struct {
+			InstanceName string
 			InstanceId string
 			InstanceType string
-			instanceStatus string
+			InstanceStatus string
+			InstancePublicIp string
+			InstancePrivateIp string
 		}
 
 		var jsonList []InstanceList
 
 		for _, reservations := range result.Reservations {
 			for _, instances := range reservations.Instances {
+				for _, tag := range instances.Tags{if *tag.Key == "Name" {instanceName = *tag.Value}}
+
+				if instances.PublicIpAddress != nil {instancePublicIp = *instances.PublicIpAddress } else {instancePublicIp = "-"}
+				if instances.PrivateIpAddress != nil {instancePrivateIp = *instances.PrivateIpAddress} else {instancePrivateIp = "-"}
+
 				instance := InstanceList{
+					InstanceName: instanceName,
 					InstanceId: *instances.InstanceId, 
 					InstanceType: string(instances.InstanceType), 
-					instanceStatus: string(instances.State.Name),
+					InstanceStatus: string(instances.State.Name),
+					InstancePublicIp: instancePublicIp,
+					InstancePrivateIp: instancePrivateIp,
 				}
 				jsonList = append(jsonList, instance)
 			}

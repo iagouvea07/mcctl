@@ -94,11 +94,11 @@ func tableOutput(result string) {
 	blue := color.New(color.FgCyan).Add(color.Underline)
 	white := color.New(color.FgWhite).Add(color.Underline)
 
-	blue.Fprintf(w, "%-30s %-25s %-15s %-10s %-15s %-15s\n",
+	blue.Fprintf(w, "%-25s %-25s %-15s %-10s %-15s %-15s\n",
 		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
 
 	for _, instance := range instances {
-		white.Fprintf(w, "%-30s %-25s %-15s %-10s %-15s %-15s\n",
+		white.Fprintf(w, "\n%-25s %-25s %-15s %-10s %-15s %-15s\n",
 			instance.InstanceName,
 			instance.InstanceId,
 			instance.InstanceType,
@@ -106,6 +106,6 @@ func tableOutput(result string) {
 			instance.InstancePublicIp,
 			instance.InstancePrivateIp,
 		)
-		w.Flush()
 	}
+	w.Flush()
 }

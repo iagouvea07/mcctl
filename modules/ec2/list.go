@@ -87,7 +87,7 @@ func ListInstances(output string) {
 	}
 }
 
-func tableOutput(result string) {
+/*func tableOutput(result string) {
 	var instances []InstanceList
 	json.Unmarshal([]byte(result), &instances)
 
@@ -109,4 +109,45 @@ func tableOutput(result string) {
 		)
 	}
 	w.Flush()
+}*/
+
+func tableOutput(result string) {
+	var instances []InstanceList
+	json.Unmarshal([]byte(result), &instances)
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+
+	headerColor := color.New(color.FgHiCyan, color.Bold)
+	rowColor := color.New(color.FgHiWhite)
+	statusRunning := color.New(color.FgGreen, color.Bold)
+	statusStopped := color.New(color.FgRed, color.Bold)
+
+	fmt.Println(color.New(color.FgBlue, color.Bold).Sprint("\n📋 EC2 Instances Overview\n"))
+
+	headerColor.Fprintf(w, "%-20s %-25s %-12s %-20s %-15s %-15s\n",
+		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
+
+	for _, instance := range instances {
+		var statusText string
+
+		switch instance.InstanceStatus {
+		case "running":
+			statusText = statusRunning.Sprint("● running")
+		case "stopped":
+			statusText = statusStopped.Sprint("■ stopped")
+		default:
+			statusText = color.New(color.FgYellow).Sprintf("○ %s", instance.InstanceStatus)
+		}
+
+		rowColor.Fprintf(w, "%-20s %-25s %-12s %-33s %-15s %-20s\n",
+			instance.InstanceName,
+			instance.InstanceId,
+			instance.InstanceType,
+			statusText,
+			instance.InstancePublicIp,
+			instance.InstancePrivateIp,
+		)
+	}
+	w.Flush()
+	fmt.Println()
 }

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	compute "mcctl/classes"
+	"mcctl/classes"
 	"mcctl/controller"
 
 	"github.com/spf13/cobra"

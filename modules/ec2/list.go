@@ -56,6 +56,7 @@ func ListInstances(output string) {
 		for _, instances := range reservations.Instances {
 
 			for _, tag := range instances.Tags{if *tag.Key == "Name" {instanceName = *tag.Value}}
+			if instanceName == "" {instanceName = "-"}
 			if instances.PublicIpAddress != nil {instancePublicIp = *instances.PublicIpAddress } else {instancePublicIp = "-"}
 			if instances.PrivateIpAddress != nil {instancePrivateIp = *instances.PrivateIpAddress} else {instancePrivateIp = "-"}
 			instanceId = *instances.InstanceId
@@ -98,7 +99,7 @@ func tableOutput(result string) {
 		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
 
 	for _, instance := range instances {
-		white.Fprintf(w, "\n%-25s %-25s %-15s %-10s %-15s %-15s\n",
+		white.Fprintf(w, "%-25s %-25s %-15s %-10s %-15s %-15s\n",
 			instance.InstanceName,
 			instance.InstanceId,
 			instance.InstanceType,

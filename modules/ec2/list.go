@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"text/tabwriter"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/fatih/color"
@@ -87,67 +87,51 @@ func ListInstances(output string) {
 	}
 }
 
-/*func tableOutput(result string) {
-	var instances []InstanceList
-	json.Unmarshal([]byte(result), &instances)
-
-	w := tabwriter.NewWriter(os.Stdout, 10, 0, 2, ' ', tabwriter.Debug)
-	blue := color.New(color.FgCyan).Add(color.Underline)
-	white := color.New(color.FgWhite).Add(color.Underline)
-
-	blue.Fprintf(w, "%-25s %-25s %-15s %-10s %-15s %-15s\n",
-		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
-
-	for _, instance := range instances {
-		white.Fprintf(w, "%-25s %-25s %-15s %-10s %-15s %-15s\n",
-			instance.InstanceName,
-			instance.InstanceId,
-			instance.InstanceType,
-			instance.InstanceStatus,
-			instance.InstancePublicIp,
-			instance.InstancePrivateIp,
-		)
-	}
-	w.Flush()
-}*/
-
 func tableOutput(result string) {
 	var instances []InstanceList
 	json.Unmarshal([]byte(result), &instances)
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-
 	headerColor := color.New(color.FgHiCyan, color.Bold)
-	rowColor := color.New(color.FgHiWhite)
 	statusRunning := color.New(color.FgGreen, color.Bold)
 	statusStopped := color.New(color.FgRed, color.Bold)
+	statusOther := color.New(color.FgYellow)
 
-	fmt.Println(color.New(color.FgBlue, color.Bold).Sprint("\n📋 EC2 Instances Overview\n"))
 
-	headerColor.Fprintf(w, "%-20s %-25s %-12s %-20s %-15s %-15s\n",
+
+	headerColor.Printf("%-20s %-25s %-12s %-15s %-20s %-20s\n",
 		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
 
 	for _, instance := range instances {
 		var statusText string
+		var statusSprintFunc func(a ...interface{}) string
 
 		switch instance.InstanceStatus {
 		case "running":
-			statusText = statusRunning.Sprint("● running")
+			statusText = "● running"
+			statusSprintFunc = statusRunning.Sprint
 		case "stopped":
-			statusText = statusStopped.Sprint("■ stopped")
+			statusText = "■ stopped"
+			statusSprintFunc = statusStopped.Sprint
 		default:
-			statusText = color.New(color.FgYellow).Sprintf("○ %s", instance.InstanceStatus)
+			statusText = fmt.Sprintf("○ %s", instance.InstanceStatus)
+			statusSprintFunc = statusOther.Sprint
 		}
 
-		rowColor.Fprintf(w, "%-20s %-25s %-12s %-33s %-15s %-20s\n",
-			instance.InstanceName,
-			instance.InstanceId,
-			instance.InstanceType,
-			statusText,
-			instance.InstancePublicIp,
-			instance.InstancePrivateIp,
+		name := fmt.Sprintf("%-20s", instance.InstanceName)
+		instanceID := fmt.Sprintf("%-25s", instance.InstanceId)
+		instanceType := fmt.Sprintf("%-12s", instance.InstanceType)
+		status := fmt.Sprintf("%-15s", statusText)
+		publicIP := fmt.Sprintf("%-20s", instance.InstancePublicIp)
+		privateIP := fmt.Sprintf("%-20s", instance.InstancePrivateIp)
+
+		fmt.Printf("%s %s %s %s %s %s\n",
+			name,
+			instanceID,
+			instanceType,
+			statusSprintFunc(status),
+			publicIP,
+			privateIP,
 		)
 	}
-	w.Flush()
 	fmt.Println()
 }

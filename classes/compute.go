@@ -6,3 +6,12 @@ type InstanceParameters struct {
 	InstanceType string 
 	InstanceKey string
 }
+
+type InstanceDescribe struct {
+	InstanceName string
+	InstanceId string
+	InstanceType string
+	InstanceStatus string
+	InstancePublicIp string
+	InstancePrivateIp string
+}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"mcctl/classes"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -12,15 +13,6 @@ import (
 	"github.com/fatih/color"
 )
 
-
-type InstanceList struct {
-	InstanceName string
-	InstanceId string
-	InstanceType string
-	InstanceStatus string
-	InstancePublicIp string
-	InstancePrivateIp string
-}
 
 var (
 	instanceId string
@@ -31,7 +23,7 @@ var (
 	instancePrivateIp string
 )
 
-var jsonList []InstanceList
+var jsonList []compute.InstanceDescribe
 
 func ListInstances(output string) {
 
@@ -63,7 +55,7 @@ func ListInstances(output string) {
 			instanceType = string(instances.InstanceType)
 			instanceStatus = string(instances.State.Name)
 
-			instance := InstanceList{
+			instance := compute.InstanceDescribe{
 				InstanceName: instanceName,
 				InstanceId: instanceId, 
 				InstanceType: instanceType, 
@@ -88,15 +80,13 @@ func ListInstances(output string) {
 }
 
 func tableOutput(result string) {
-	var instances []InstanceList
+	var instances []compute.InstanceDescribe
 	json.Unmarshal([]byte(result), &instances)
 
 	headerColor := color.New(color.FgHiCyan, color.Bold)
 	statusRunning := color.New(color.FgGreen, color.Bold)
 	statusStopped := color.New(color.FgRed, color.Bold)
 	statusOther := color.New(color.FgYellow)
-
-
 
 	headerColor.Printf("%-20s %-25s %-12s %-15s %-20s %-20s\n",
 		"NAME", "INSTANCE ID", "TYPE", "STATUS", "PUBLIC IP", "PRIVATE IP")
@@ -106,15 +96,15 @@ func tableOutput(result string) {
 		var statusSprintFunc func(a ...interface{}) string
 
 		switch instance.InstanceStatus {
-		case "running":
-			statusText = "● running"
-			statusSprintFunc = statusRunning.Sprint
-		case "stopped":
-			statusText = "■ stopped"
-			statusSprintFunc = statusStopped.Sprint
-		default:
-			statusText = fmt.Sprintf("○ %s", instance.InstanceStatus)
-			statusSprintFunc = statusOther.Sprint
+			case "running":
+				statusText = "● running"
+				statusSprintFunc = statusRunning.Sprint
+			case "stopped":
+				statusText = "■ stopped"
+				statusSprintFunc = statusStopped.Sprint
+			default:
+				statusText = fmt.Sprintf("○ %s", instance.InstanceStatus)
+				statusSprintFunc = statusOther.Sprint
 		}
 
 		name := fmt.Sprintf("%-20s", instance.InstanceName)

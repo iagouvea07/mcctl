@@ -21,7 +21,7 @@ func handleInstances(provider string, action string, output string, instancePara
 		case "create":
 			createInstances(provider, instanceParam)
 		case "delete":
-
+			deleteInstances(provider, instanceParam)
 		case "stop":
 
 		case "reboot":
@@ -60,4 +60,18 @@ func createInstances(provider string, instanceParam compute.InstanceParameters) 
 			fmt.Println("error")
 			os.Exit(1)
 	}
+}
+
+func deleteInstances (provider string, instanceParam compute.InstanceParameters) {
+	switch provider {
+    	case "aws":
+			ec2.DeleteInstance(instanceParam)
+		case "azure":
+			//do action
+		case "gcp":
+			//do action
+		default:
+			fmt.Println("error")
+			os.Exit(1)
+	}	
 }

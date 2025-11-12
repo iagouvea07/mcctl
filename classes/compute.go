@@ -5,6 +5,7 @@ type InstanceParameters struct {
 	InstanceAmi string
 	InstanceType string 
 	InstanceKey string
+	InstanceId string
 }
 
 type InstanceDescribe struct {

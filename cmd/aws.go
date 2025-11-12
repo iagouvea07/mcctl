@@ -15,10 +15,11 @@ func init() {
 	AwsCmd.Flags().StringVarP(&awsOutput, "output", "o", "table", "Output types (table, json)")
 
 	//instance flags
-	AwsCmd.Flags().StringVar(&instanceParameters.InstanceName, "name", "AWS Instance", "Define an instance name")
+	AwsCmd.Flags().StringVar(&instanceParameters.InstanceName, "name", "", "Define an instance name")
 	AwsCmd.Flags().StringVar(&instanceParameters.InstanceAmi, "image", "ami-084568db4383264d4", "Select the instance AMI")
 	AwsCmd.Flags().StringVar(&instanceParameters.InstanceType, "type", "t3.micro", "Select the instance size")
 	AwsCmd.Flags().StringVar(&instanceParameters.InstanceKey, "key", "", "Select your key pair (required)")
+	AwsCmd.Flags().StringVar(&instanceParameters.InstanceId, "instance", "", "Select your instance Id")
 }
 
 var AwsCmd = &cobra.Command{

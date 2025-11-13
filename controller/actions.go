@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	compute "mcctl/classes"
-	"mcctl/modules/ec2"
+	"mcctl/modules/aws/ec2"
 	"os"
 )
 

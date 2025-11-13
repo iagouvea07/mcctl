@@ -27,17 +27,17 @@ func handleInstances(provider string, action string, output string, instancePara
 		case "reboot":
 
 		case "ls":
-			listInstances(provider, output)
+			listInstances(provider, output, instanceParam)
 		case "help":
 
 		default:	
 	}
 }
 
-func listInstances(provider string, output string) {
+func listInstances(provider string, output string, instanceParam compute.InstanceParameters) {
 	switch provider {
     	case "aws":
-			ec2.ListInstances(output)
+			ec2.ListInstances(output, instanceParam)
 		case "azure":
 			//do action
 		case "gcp":

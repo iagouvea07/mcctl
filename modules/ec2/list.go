@@ -9,7 +9,9 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/fatih/color"
 )
 
@@ -25,7 +27,7 @@ var (
 
 var jsonList []compute.InstanceDescribe
 
-func ListInstances(output string) {
+func ListInstances(output string, parameters compute.InstanceParameters) {
 
     cfg, err := config.LoadDefaultConfig(context.TODO(), 
         config.WithRegion("us-east-1"),
@@ -35,14 +37,32 @@ func ListInstances(output string) {
     }
 	client := ec2.NewFromConfig(cfg)
 
-	result, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{})
-    if err != nil {
-        log.Fatal(err)
-    }
+	var result ec2.DescribeInstancesOutput
+	
+	if parameters.InstanceName == "" {
+		DescribeResult, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{})
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	if result == nil {
-		os.Exit(22)
+		result = *DescribeResult
+	} else {
+		DescribeResult, err := client.DescribeInstances(context.TODO(), &ec2.DescribeInstancesInput{
+			Filters: []types.Filter{
+				{
+					Name: aws.String("tag:Name"),
+					Values: []string{parameters.InstanceName},
+				},
+			},
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		result = *DescribeResult
 	}
+
 
 	for _, reservations := range result.Reservations {
 		for _, instances := range reservations.Instances {

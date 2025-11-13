@@ -62,5 +62,5 @@ func CreateInstance(parameters compute.InstanceParameters) {
 		return
 	}
 
-	fmt.Println("Instance Created: ", *instanceId)
+	fmt.Printf("🚀 Instance Created: %s\n\n", *instanceId)
 }

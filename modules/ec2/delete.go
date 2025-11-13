@@ -55,11 +55,20 @@ func DeleteInstance(parameters compute.InstanceParameters) {
 		})
 
 		if DeleteErr != nil {
-			fmt.Println("The InstanceId is required [--instance]")
+			fmt.Println("Unable to delete instances: The instances set do not exists!")
 			os.Exit(1)
 		}
 
-		fmt.Println(instanceList, " is Deleted!")
+		var deletedInstances string
+		for i := 0; i < len(instanceList); i++ {
+			if deletedInstances == "" {
+				deletedInstances = instanceList[i]
+			} else {
+				deletedInstances = deletedInstances + " " + instanceList[i]
+			}
+		}
+
+		fmt.Println("💥", deletedInstances, "is Deleted!")
 		
 	} else {
 		_, DeleteErr := client.TerminateInstances(context.TODO(), &ec2.TerminateInstancesInput{
@@ -71,7 +80,7 @@ func DeleteInstance(parameters compute.InstanceParameters) {
 			os.Exit(1)
 		}
 
-		fmt.Println("[",parameters.InstanceId,"]", " is Deleted!")
+		fmt.Println("💥 ",parameters.InstanceId, " is Deleted!")
 	}
 
 }

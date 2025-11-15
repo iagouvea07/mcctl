@@ -25,9 +25,9 @@ var (
 	instancePrivateIp string
 )
 
-var jsonList []compute.InstanceDescribe
+var jsonList []class.InstanceDescribe
 
-func ListInstances(output string, parameters compute.InstanceParameters) {
+func ListInstances(output string, parameters class.InstanceParameters) {
 
     cfg, err := config.LoadDefaultConfig(context.TODO(), 
         config.WithRegion("us-east-1"),
@@ -75,7 +75,7 @@ func ListInstances(output string, parameters compute.InstanceParameters) {
 			instanceType = string(instances.InstanceType)
 			instanceStatus = string(instances.State.Name)
 
-			instance := compute.InstanceDescribe{
+			instance := class.InstanceDescribe{
 				InstanceName: instanceName,
 				InstanceId: instanceId, 
 				InstanceType: instanceType, 
@@ -100,7 +100,7 @@ func ListInstances(output string, parameters compute.InstanceParameters) {
 }
 
 func tableOutput(result string) {
-	var instances []compute.InstanceDescribe
+	var instances []class.InstanceDescribe
 	json.Unmarshal([]byte(result), &instances)
 
 	headerColor := color.New(color.FgHiCyan, color.Bold)

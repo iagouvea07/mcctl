@@ -1,4 +1,4 @@
-package compute
+package class
 
 type InstanceParameters struct {
 	InstanceName string

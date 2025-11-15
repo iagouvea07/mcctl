@@ -1,4 +1,4 @@
-package controller
+package instance
 
 import (
 	"fmt"
@@ -7,30 +7,24 @@ import (
 	"os"
 )
 
-func ExecuteAction(provider string, resource string, action string, output string, instanceParam compute.InstanceParameters) {
-	switch resource {
-		case "instance":
-			handleInstances(provider, action, output, instanceParam)
-		default:
-			fmt.Println("error")
-	}
-}
 
-func handleInstances(provider string, action string, output string, instanceParam compute.InstanceParameters) {
+func HandleInstances(provider string, action string, output string, instanceParam compute.InstanceParameters) {
 	switch action {
 		case "create":
 			createInstances(provider, instanceParam)
 		case "delete":
 			deleteInstances(provider, instanceParam)
 		case "stop":
-
+			//TODO
 		case "reboot":
-
+			//TODO
 		case "ls":
 			listInstances(provider, output, instanceParam)
 		case "help":
-
+			//TODO
 		default:	
+			fmt.Println("error")
+			os.Exit(1)
 	}
 }
 
@@ -39,9 +33,9 @@ func listInstances(provider string, output string, instanceParam compute.Instanc
     	case "aws":
 			ec2.ListInstances(output, instanceParam)
 		case "azure":
-			//do action
+			//TODO
 		case "gcp":
-			//do action
+			//TODO
 		default:
 			fmt.Println("error")
 			os.Exit(1)
@@ -53,25 +47,26 @@ func createInstances(provider string, instanceParam compute.InstanceParameters) 
     	case "aws":
 			ec2.CreateInstance(instanceParam)
 		case "azure":
-			//do action
+			//TODO
 		case "gcp":
-			//do action
+			//TODO
 		default:
 			fmt.Println("error")
 			os.Exit(1)
 	}
 }
 
-func deleteInstances (provider string, instanceParam compute.InstanceParameters) {
+func deleteInstances(provider string, instanceParam compute.InstanceParameters) {
 	switch provider {
     	case "aws":
 			ec2.DeleteInstance(instanceParam)
 		case "azure":
-			//do action
+			//TODO
 		case "gcp":
-			//do action
+			//TODO
 		default:
 			fmt.Println("error")
 			os.Exit(1)
 	}	
 }
+

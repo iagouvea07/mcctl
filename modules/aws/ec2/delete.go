@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
-func DeleteInstance(parameters compute.InstanceParameters) {
+func DeleteInstance(parameters class.InstanceParameters) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), 
 		config.WithRegion("us-east-1"),
 	)

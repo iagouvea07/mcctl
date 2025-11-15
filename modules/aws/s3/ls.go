@@ -2,12 +2,16 @@ package s3
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	class "mcctl/classes"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/fatih/color"
 )
 
 func ListBuckets(output string) {
@@ -34,5 +38,31 @@ func ListBuckets(output string) {
 		bucketList = append(bucketList, bucketInfo)
 	}
 
-	fmt.Println(bucketList)
+	jsonEncode, _ := json.MarshalIndent(bucketList, "", "  ")
+
+	jsonList := string(jsonEncode)
+
+	switch output {
+		case "json": 
+			fmt.Println(jsonList)
+			os.Exit(0)
+
+		case "table":
+			tableOutput(jsonList)
+	}
+}
+
+func tableOutput(result string) {
+	var buckets []class.BucketDescribe
+	json.Unmarshal([]byte(result), &buckets)
+
+	headerColor := color.New(color.FgHiCyan, color.Bold)
+
+	headerColor.Printf("%-25s\n", "BUCKET NAME")
+
+	for _, bucket := range buckets {
+		name := fmt.Sprintf("%-25s", bucket.BucketName)
+
+		fmt.Printf("%s\n", name)
+	}
 }

@@ -9,6 +9,7 @@ import (
 
 var awsOutput string
 var instanceParameters class.InstanceParameters
+var bucketParameters class.BucketParameters
 
 func init() {
 
@@ -27,6 +28,8 @@ var AwsCmd = &cobra.Command{
 	Short: "Option for interact with AWS resources",
 	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		controllers.ExecuteAction(cmd.Name(), args[0], args[1], awsOutput, instanceParameters)
+		controllers.ExecuteAction(
+			cmd.Name(), args[0], args[1], awsOutput, instanceParameters, bucketParameters,
+		)
 	},	
 }

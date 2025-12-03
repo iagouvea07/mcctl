@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	compute "mcctl/classes"
+	class "mcctl/classes"
 	"mcctl/controllers/bucket"
 	"mcctl/controllers/instance"
 )
@@ -12,13 +12,14 @@ func ExecuteAction(
 		resource string, 
 		action string, 
 		output string, 
-		instanceParam compute.InstanceParameters,
+		instanceParam class.InstanceParameters,
+		bucketParam class.BucketParameters,
 	) {
 	switch resource {
 		case "instance":
 			instance.HandleInstances(provider, action, output, instanceParam)
 		case "bucket":
-			bucket.HandleBuckets(provider, action, output)
+			bucket.HandleBuckets(provider, action, output, bucketParam)
 		default:
 			fmt.Println("error")
 	}
